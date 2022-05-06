@@ -70,7 +70,7 @@ classdef StateRuntimeVariable < handle
         end
         
         function v = get_value(obj) 
-           v = obj.value();
+           v = obj.value;
         end
         function set_value(obj, v) 
            obj.value_ = v;
