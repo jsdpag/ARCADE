@@ -37,10 +37,10 @@ function  err = gettrialerrors( retmap )
   err = cell( 2 , 9 ) ;
   
   % Error codes , field name
-  for  e = 1 : 9 , f = sprintf( 'num%d' , e ) ;
+  for  e = 1 : 9
     
     % Retrieve legend string
-    err{ 1 , e } = leg.( f ) ;
+    err{ 1 , e } = leg{ e + 1 } ;
     
     % Store code
     err{ 2 , e } = e ;
