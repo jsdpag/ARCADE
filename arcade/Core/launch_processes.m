@@ -130,7 +130,7 @@ if ~isempty(cfg.ControlScreen)
 end
 
 % Launch and connect to EchoServer
-echstr = fullfile( arcaderoot, 'EchoServer', 'EchoServer.exe' ) ;
+echstr = fullfile( arcaderoot, 'arcade', 'EchoServer', 'EchoServer.exe' ) ;
 if  exist( echstr , 'file' )
   
   % Launch process in background, copy all output to a session-specific log
