@@ -141,6 +141,9 @@ if  exist( echstr , 'file' )
     error( 'Failed to launch EchoServer.exe' )
   end
   
+  % Give EchoServer.exe time to create the pipe
+  sleep( 100 ) ;
+  
   % Open write end of communications pipe
   EchoServer.Connect( ) ;
   
