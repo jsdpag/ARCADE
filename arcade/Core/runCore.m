@@ -159,6 +159,13 @@ if ~isempty(cfg.ControlScreen)
     SGLTrialDataPipe.delete()
 end
 
+% Close EchoServer pipe
+try
+  EchoServer.Disconnect( ) ;
+catch
+  warning( 'Failed to disconnect EchoServer' )
+end
+
 % kill subprocesses
 cellfun(@(x) x.stop(), procs)
 

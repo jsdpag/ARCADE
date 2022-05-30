@@ -129,6 +129,22 @@ if ~isempty(cfg.ControlScreen)
     IPCEvent.set_event('ControlScreenDone')
 end
 
+% Launch and connect to EchoServer
+echstr = fullfile( arcaderoot, 'EchoServer', 'EchoServer.exe' ) ;
+if  exist( echstr , 'file' )
+  
+  % Launch process in background, copy all output to a session-specific log
+  % file
+  echstr = [ echstr , ' ' , cfg.filepaths.Session , 'echo.txt &' ] ;
+  if  system( echstr ) ~= 0
+    error( 'Failed to launch EchoServer.exe' )
+  end
+  
+  % Open write end of communications pipe
+  EchoServer.Connect( ) ;
+  
+end % EchoServer
+
 % At this point, we have opened up all sub-processes. Now find and disable
 % all Matlab timers that were set up by processManager, because these lead
 % to a ~10% increase in the duration of any timer e.g. when calling
