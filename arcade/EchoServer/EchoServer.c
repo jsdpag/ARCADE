@@ -3,13 +3,12 @@
   EchoServer.exe [logpath]
   
   Creates named pipe \\.pipe\EchoServerPipe then waits for input. Assumes that
-  all data in pipe is UTF-8. Casts to char & prints to command prompt window.
-  Looks for NULL (zero, 0) terminated strings; each string is printed
-  separately. Hence a partial write/read from the pipe that does not contain
-  a NULL character will not print until a NULL byte has been writen/read.
+  all data in pipe is ASCII. Casts to char & prints to command prompt window.
+  Every read from the pipe is printed immediately as is to the command window.
   
-  If optional command line argument is a valid path/file name then writes
-  are also streamed to 
+  The optional command line argument names an output text regular file. If
+  provided then all reads from the pipe are also streamed to that file.
+  
 */
 
 
