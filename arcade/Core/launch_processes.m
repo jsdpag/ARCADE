@@ -135,7 +135,7 @@ if  exist( echstr , 'file' )
   
   % Launch process in background, copy all output to a session-specific log
   % file
-  echstr = [ echstr , ' ' , cfg.filepaths.Session , 'echo.txt &' ] ;
+  echstr = [ echstr, ' ', cfg.filepaths.Session, filesep, 'echo.txt &' ] ;
   if  system( echstr ) ~= 0
     error( 'Failed to launch EchoServer.exe' )
   end
