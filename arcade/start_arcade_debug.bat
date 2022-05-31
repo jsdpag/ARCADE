@@ -22,10 +22,10 @@ set logfile=%~dp0..\errorLog\log_core_%datestamp%_%timestamp%.txt
 cd %ARCADEDIR%
 
 IF [%1]==[] ( 
-	SET RUNCMD=matlab -logfile %logfile% -r "restoredefaultpath(); runCore(); exit" 
+	SET RUNCMD=matlab -nosplash -logfile %logfile% -r "restoredefaultpath(); runCore(); exit" 
 	) ELSE IF [%1]==[/DEBUG] ( 
 	SET RUNCMD=matlab -r "dbstop if error; runCore" 
-	) ELSE ( SET RUNCMD=matlab -logfile %logfile% -r "restoredefaultpath(); runCore('%~1'); exit"  )
+	) ELSE ( SET RUNCMD=matlab -nosplash -logfile %logfile% -r "restoredefaultpath(); runCore('%~1'); exit"  )
 
 echo %RUNCMD%
 %RUNCMD%
