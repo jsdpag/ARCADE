@@ -95,9 +95,47 @@ assert(IPCEvent.wait_for_event(StimServer.doneEventName, 10000), ...
 % connect to StimServer
 if ~isempty(cfg.StimServer)
     logmessage('Connect to StimServer')
-    StimServer.Connect();
-    logmessage(sprintf('FrameRate = %3.0f', StimServer.GetFrameRate));
-end
+    
+    % There is sometimes a startup error where StimServer.GetFrameRate
+    % leads to a crash. It is possible that StimServer.Connect( ) is
+    % executed without successfully linking to the named pipe. One possible
+    % solution is to simply disconnect and reconnect. Try this several
+    % times before issuing an error.
+    
+    % Attempts
+    for  i = 1 : 10
+      
+      % Connect to named pipe
+      StimServer.Connect( ) ;
+      
+      % Do not crash startup sequence unintentionally
+      try
+        
+        % Query StimServer.exe via named pipe
+        logmessage(sprintf('FrameRate = %3.0f', StimServer.GetFrameRate));
+        
+        % Success, break the for loop
+        break
+        
+      % StimServer.GetFrameRate failed
+      catch
+        
+        % That was the last attempt, issue an error
+        if  i == 10
+          error( [ 'Failed to connect to StimServer\n' , ...
+                   'Possibly due to failure when opening named pipe.' ] )
+        end
+        
+        % Disconnect
+        StimServer.Disconnect( ) ;
+        
+        % Breif wait, 100ms
+        sleep( 100 ) ;
+        
+      end % try StimServer.GetFrameRate
+    end % attempt StimServer.GetFrameRate
+    
+end % connect to StimServer
 
 % connect to DaqServer
 if ~isempty(cfg.DaqServer)
