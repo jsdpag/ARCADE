@@ -107,6 +107,11 @@ classdef (Sealed) SGLSessionArc
                 this.mEvalTrialScript(EditableVars,TrialData,TaskFile)
                 % return from User's Workspace
                 
+                % Error Log current trial
+                logmessage( sprintf( 'Trial %d, Block %d, Condition %d',...
+                  TrialData.currentTrial , TrialData.currentBlock , ...
+                    TrialData.currentCondition ) )
+                
                 % Request higher-precision multi-media timers from Windows
                 % kernel using timeBeginPeriod at a maximum resolution of
                 % 1ms
@@ -135,6 +140,10 @@ classdef (Sealed) SGLSessionArc
                 
                 % Release higher-precision multi-media timers
                 timeBEPeriod( 'e' , 1 ) ;
+                
+                % Error log end of trial
+                logmessage( sprintf( 'End of trial %d' , ...
+                  TrialData.currentTrial ) )
 
                 EventServer.writeEvents();
 
@@ -147,6 +156,10 @@ classdef (Sealed) SGLSessionArc
                 % -- Pause Requested? --
                 % also allows the user to quit the current session
                 if PauseEvent.wasTriggered
+                  
+                    % Error log entering pause block
+                    logmessage( 'Enter pause state' )
+                  
                     % launch pause GUI 
                     eventmarker(eventPause);      % send enter Pause marker event 
                     StimBckgrnd.setPauseScreen;
@@ -156,6 +169,9 @@ classdef (Sealed) SGLSessionArc
                     
                     eventmarker(eventResume);     % send enter Pause marker event 
                     StimBckgrnd.setBackground;
+                    
+                    % Error log exit pause block
+                    logmessage( 'Exit pause state' )
                 end
                 
                 % check if the user has requested to quit the session 
