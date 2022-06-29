@@ -113,12 +113,15 @@ classdef  EchoServer < handle
         
     end
     
-    function  Write( s )
-    % Write s to pipe. Automatically casts s as uint8. Quietly ignores
-    % empty input.
+    function  Write( varargin )
+    % Write takes identical input to sprintf, with the exception that non-
+    % existant or empty input is quietly ignored. In other words, Write
+    % will create a formatted string using the same kind of input as
+    % sprintf. This string is then automatically cast as uint8 and piped to
+    % EchoServer.exe.
     
       % s is empty, quietly return
-      if  isempty( s ) , return , end
+      if  nargin == 0 || isempty( varargin{ 1 } ) , return , end
     
       % Point to only instance of EchoServer
       obj = EchoServer.this ;
@@ -128,8 +131,8 @@ classdef  EchoServer < handle
         error( 'EchoServer:Unconnected' , 'No connection to EchoServer.' );
       end
       
-      % Cast input to unsigned bytes with null terminating byte
-      s = uint8( s ) ;
+      % Create formatted string and cast to uint8
+      s = uint8(  sprintf( varargin{ : } )  ) ;
       
       % Number of elements to write
       Ns = numel( s ) ;
