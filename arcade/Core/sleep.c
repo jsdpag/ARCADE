@@ -3,9 +3,10 @@
  *  
  *  Direct call to system kernel to pause the current process for ms
  *  milliseconds. If ms is 0 (zero) then the function returns immediately.
+ *  Silently returns immediately if ms is empty (e.g. [ ]) or negative.
  *  
  *  MEX wrapper function for Windows system call Sleep( ). Note that the
- *  behaviour when ms is 0 is different from the system call.
+ *  behaviour when ms <= 0 is different from the system call.
  *  
  *  See: https://docs.microsoft.com/en-us/windows/win32/api/synchapi/
  *    nf-synchapi-sleep
@@ -52,9 +53,8 @@ void  mexFunction ( int nlhs ,       mxArray ** plhs ,
   if  ( nlhs != 0 )
     mexErrMsgIdAndTxt ( "sleep:nargout" , "need 0 output args" ) ;
   
-  // Input arg cannot be empty
-  if  ( mxIsEmpty( prhs[ 0 ] ) )
-    mexErrMsgIdAndTxt ( "sleep:empty" , "ms is empty" ) ;
+  // Input arg is empty, silently return immediately
+  if  ( mxIsEmpty( prhs[ 0 ] ) )  return ;
 
   // Input arg must be scalar
   if  ( !mxIsScalar( prhs[ 0 ] ) )
@@ -75,14 +75,13 @@ void  mexFunction ( int nlhs ,       mxArray ** plhs ,
   if  ( !mxIsFinite( ms ) )
     mexErrMsgIdAndTxt ( "sleep:notfinite" , "ms is not finite" ) ;
   
-  // Check range of ms
-  if  ( ms  <  MSMINV )
-    mexErrMsgIdAndTxt ( "sleep:msminval" , "ms < %d" , MSMINV ) ;
+  // ms is less than or equal to the minimum value, return immediately
+  if  ( ms  <=  MSMINV )  return ;
   
   
-  /* Execute pause if sleep duration is non-zero */
+  /* Execute pause if sleep duration is non-zero and finite */
   
-  if  ( ms )  Sleep( ms ) ;
+  Sleep( ms ) ;
   
   
 } // end sleep
