@@ -115,13 +115,7 @@ SESSArc.mStart;
 
 %% End session
 
-logmessage('Closing MATLAB in 5 s. Press CTRL+C to cancel or see log files');
-
-for seconds = 5:-1:0
-    fprintf('%g', seconds)
-    pause(1)
-    fprintf('\b')
-end
+logmessage('Closing ARCADE');
 
 end
 
