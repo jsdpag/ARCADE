@@ -10,9 +10,11 @@
 %   convertEsiFile          - Convert behavioral data stored in .esi file written by
 %   createTrial             - Create and start a trial from several trial states
 %   eventmarker             - Send a digital marker for an event to the DAQ card (if
-%   getPreviousTrialData    - Retreive behavioral outcomes and conditions of
+%   getPreviousTrialData    - Retrieve behavioral outcomes and conditions of
+%   gettrialerrors          - Retrieve all trial error codes and their labels.
 %   groupStimuli            - Group changes to stimuli together.
 %   logmessage              - Write message with timestamp to terminal and log
+%   onlinefigure            - For convenient grouping and handling of online plots.
 %   photodiode              - Set the mode of the photodiode stimulus
 %   reactiontime            - Measure and store reaction times.
 %   readEvtFile             - Read .evt file written by ARCADE.
@@ -27,3 +29,4 @@
 %   trialerror              - Store outcome of trial in behavioral record file
 %   StateRuntimeVariable    - Class for storing values in onEntry/onExit
 %                             State functions
+%   Welford                 - Data type class that implements Welford's online algorithm.

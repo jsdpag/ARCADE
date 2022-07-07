@@ -11,9 +11,13 @@ help eventmarker
 %%
 help getPreviousTrialData
 %%
+help gettrialerrors
+%%
 help groupStimuli
 %%
 help logmessage
+%%
+help onlinefigure
 %%
 help photodiode
 %%
@@ -40,3 +44,5 @@ help trackeye
 help trialerror
 %%
 help StateRuntimeVariable
+%%
+help Welford
