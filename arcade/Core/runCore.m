@@ -129,7 +129,7 @@ if ~isempty(cfg.EyeServer)
     EyeServer.Stop(eyeFile)
     waitForFileEvt = IPCEvent('EyeServerDone');
     logmessage('Waiting for eye data transfer')
-    result = waitForFileEvt.waitForTrigger(3600000);
+    result = waitForFileEvt.waitForTrigger(43200000);
     if ~result
         warning('Could not transfer eye data')
     end
