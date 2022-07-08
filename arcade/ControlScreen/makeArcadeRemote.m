@@ -15,7 +15,7 @@ function  makeArcadeRemote
   % Create figure as a container for the remote
   fig = figure( 'MenuBar' , 'none' , 'ToolBar', 'none' , ...
     'DockControls' , 'off' , 'NumberTitle' , 'off' , 'Tag' , 'remote' , ...
-      'Visible' , 'off' ) ;
+      'CloseRequestFcn' , '' , 'Visible' , 'off' ) ;
   
   
   % Create 'Pause' button

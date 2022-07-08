@@ -150,6 +150,9 @@ classdef (Sealed) SGLSessionArc
                 if DaqServer.GetConnectionStatus()
                     totalRewardTime(DaqServer.GetTotalRewardTime());
                 end
+                
+                % Allow any queued callbacks to execute
+                drawnow
 
                 quitSession = false;
                 
