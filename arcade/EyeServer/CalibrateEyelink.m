@@ -99,7 +99,7 @@ classdef CalibrateEyelink < handle
                 'FontWeight', 'bold')
             
             cfg = ArcadeConfig;
-            cfg.ControlScreen = [];
+            cfg.ControlScreen = '' ;
             cfg.DaqServer = 'NidaqServer.exe';
             cfg.StimServer = 'StimServer.exe';
             obj.procs = launch_processes(cfg);
