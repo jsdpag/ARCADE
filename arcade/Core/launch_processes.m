@@ -8,15 +8,20 @@ elseif nargin == 2
     cfgPath = varargin{1};
 end
 
-% Name of task-specific session launch script
-sesslaunchname = fullfile( fileparts( cfg.taskFile ) , ...
-  'session_launch_script.m' ) ;
+% Task file name provided
+if  ~ isempty( cfg.taskFile )
+  
+  % Name of task-specific session launch script
+  sesslaunchname = fullfile( fileparts( cfg.taskFile ) , ...
+    'session_launch_script.m' ) ;
 
-% Look for task-specific session launch script
-if  exist( sesslaunchname , 'file' )
-  logmessage( [ 'Executing session launch script: ' , sesslaunchname ] )
-  run( sesslaunchname )
-end
+  % Look for task-specific session launch script
+  if  exist( sesslaunchname , 'file' )
+    logmessage( [ 'Executing session launch script: ' , sesslaunchname ] )
+    run( sesslaunchname )
+  end
+  
+end % task file --> session launch script
 
 % Accumulate executable file names for critical ARCADE processes in this.
 % Empty string is a reference to the calling, Core process.
