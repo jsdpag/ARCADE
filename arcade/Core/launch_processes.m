@@ -8,6 +8,16 @@ elseif nargin == 2
     cfgPath = varargin{1};
 end
 
+% Name of task-specific session launch script
+sesslaunchname = fullfile( fileparts( cfg.taskFile ) , ...
+  'session_launch_script.m' ) ;
+
+% Look for task-specific session launch script
+if  exist( sesslaunchname , 'file' )
+  logmessage( [ 'Executing session launch script: ' , sesslaunchname ] )
+  run( sesslaunchname )
+end
+
 % Accumulate executable file names for critical ARCADE processes in this.
 % Empty string is a reference to the calling, Core process.
 critical = { '' } ;
@@ -34,6 +44,8 @@ if ~isempty(cfg.ControlScreen)
         'printStdout', false, 'printStderr', false);
     controlScreenDoneEvent = IPCEvent('ControlScreenDone');
     readyEvents{end+1} = controlScreenDoneEvent.name;
+else
+  makeArcadeRemote % The core process provides a pause button.
 end
 
 % launch EyeServer process
@@ -148,14 +160,16 @@ if ~isempty(cfg.EyeServer)
     logmessage('Connect to EyeServer')
     EyeServer.Connect();
     
-    % Quick and dirty way for the user to optionally enable sample mode.
-    % User must create an empty text file in the same folder as the task
-    % file, and rename it EyeServer_SetSampleMode.arcade.
-    if  exist( fullfile( fileparts( cfg.taskFile ) , ...
-          'EyeServer_SetSampleMode.arcade' ) , 'file' )
+    % Session launch script was executed, and it defined the struct
+    % sesslaunchparams with field .EyeServer_SampleMode
+    if  exist( sesslaunchparams , 'var' )  &&  ...
+        isfield( sesslaunchparams , 'EyeServer_SampleMode' )  &&  ...
+        sesslaunchparams.EyeServer_SampleMode
+      
       logmessage( 'Enabling EyeServer Sample Mode' )
       EyeServer.SetSampleMode( ) ;
-    end
+      
+    end % EyeServer sample mode
     
     EyeServer.Start('tmp.edf')
 end
