@@ -55,7 +55,7 @@ classdef CalibrateEyelink < handle
     end
     
     methods
-        function obj = CalibrateEyelink(rewardDuration, stim)
+        function obj = CalibrateEyelink(rewardDuration, stim, screenGamma)
             if ~Eyelink('IsConnected')
                 assert(Eyelink('Initialize') == 0, 'Eyelink: could not initialize')
             end
@@ -104,8 +104,11 @@ classdef CalibrateEyelink < handle
             cfg.StimServer = 'StimServer.exe';
             obj.procs = launch_processes(cfg);
             
+            if  exist( 'screenGamma' , 'var' ) || ~isempty( screenGamma )
+              StimServer.InvertGammaCorrection( screenGamma ) ;
+            end
             
-            if ~exist('stim', 'var')
+            if ~exist('stim', 'var') || isempty( stim )
                 obj.stim = CalibrationStimulusGaussian();
                 obj.stimHandle = @CalibrationStimulusGaussian;
             else
@@ -119,7 +122,7 @@ classdef CalibrateEyelink < handle
             
             
             obj.stopEvent = IPCEvent('StopEyelinkCalibration');
-            if ~exist('rewardDuration', 'var')
+            if ~exist('rewardDuration', 'var') || isempty( rewardDuration )
                 rewardDuration = 80;
             end
             obj.rewardDuration = rewardDuration;
