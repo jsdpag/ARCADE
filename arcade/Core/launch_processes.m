@@ -52,6 +52,7 @@ switch  cfg.ControlScreen
     readyEvents{end+1} = controlScreenDoneEvent.name;
   case  'makeArcadeRemote.m'
     makeArcadeRemote % The core process provides a pause button.
+    cfg.ControlScreen = '' ;
 end
 
 % launch EyeServer process
