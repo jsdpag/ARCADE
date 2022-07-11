@@ -37,8 +37,9 @@ for iExe = 1:length(cfg.OtherExecutables)
       'printStdout' , false , 'printStderr' , false );
 end
 
-% launch control screen process
-if ~isempty(cfg.ControlScreen)
+% launch control screen process, switch responds to valid options
+switch  cfg.ControlScreen
+  case  'MatlabControlScreen.bat'
     logmessage(sprintf('Starting %s', cfg.ControlScreen))
     
     controlScreenExePath = fullfile(arcaderoot, 'arcade', ...
@@ -49,8 +50,8 @@ if ~isempty(cfg.ControlScreen)
         'printStdout', false, 'printStderr', false);
     controlScreenDoneEvent = IPCEvent('ControlScreenDone');
     readyEvents{end+1} = controlScreenDoneEvent.name;
-else
-  makeArcadeRemote % The core process provides a pause button.
+  case  'ArcadeRemote'
+    makeArcadeRemote % The core process provides a pause button.
 end
 
 % launch EyeServer process
