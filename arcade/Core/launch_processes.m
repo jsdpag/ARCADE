@@ -50,7 +50,7 @@ switch  cfg.ControlScreen
         'printStdout', false, 'printStderr', false);
     controlScreenDoneEvent = IPCEvent('ControlScreenDone');
     readyEvents{end+1} = controlScreenDoneEvent.name;
-  case  'ArcadeRemote'
+  case  'makeArcadeRemote.m'
     makeArcadeRemote % The core process provides a pause button.
 end
 
