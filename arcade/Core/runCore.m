@@ -151,6 +151,12 @@ end
 % close TrialData pipe
 if ~isempty(cfg.ControlScreen)
     SGLTrialDataPipe.delete()
+% makeArcadeRemote.m might have been used
+else
+  % Check for remote
+  f = findobj( 'Type' , 'figure' , 'Tag' , 'remote' ) ;
+  % Not empty, issue a close request
+  if  ~ isempty( f ) , close( f ) , end
 end
 
 % Close EchoServer pipe
