@@ -97,7 +97,7 @@ evtFile = fullfile(cfg.filepaths.Behaviour, [cfg.sessionName '.evt']);
 eventServer = SGLEventMarkerServer.launch(evtFile);
 
 % asynchronously launch subprocesses
-processes = launch_processes(cfg, ...
+[ processes , cfg ] = launch_processes(cfg, ...
     fullfile(cfg.filepaths.Backup, [cfg.sessionName '_cfg.mat']));
 
 cleanup = onCleanup(@() cleanup_function(cfg, processes));

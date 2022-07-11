@@ -15,7 +15,7 @@ function  makeArcadeRemote
   % Create figure as a container for the remote
   fig = figure( 'MenuBar' , 'none' , 'ToolBar', 'none' , ...
     'DockControls' , 'off' , 'NumberTitle' , 'off' , 'Tag' , 'remote' , ...
-      'CloseRequestFcn' , '' , 'Visible' , 'off' ) ;
+      'CloseRequestFcn' , @fig_closereq , 'Visible' , 'off' ) ;
   
   
   % Create 'Pause' button
@@ -50,4 +50,24 @@ function  makeArcadeRemote
   
   
 end % makeArcadeRemote
+
+
+% Figure Callback
+function  fig_closereq( f , ~ )
+  
+  % The window was closed. But no request to quit the session was given.
+  if  requestQuitSession( 'read' )
+    
+    % Make sure that session ends because we can't pause it any more.
+    requestQuitSession( ) ;
+
+    % Note this fact in the error log file
+    logmessage( 'ArcadeRemote was closed. Quitting session.' )
+  
+  end % quit session
+  
+  % Kill the figure
+  delete( f )
+  
+end % fig_closereq
 

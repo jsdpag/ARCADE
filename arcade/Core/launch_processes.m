@@ -1,4 +1,4 @@
-function procs = launch_processes(cfg, varargin)
+function [ procs , cfg ] = launch_processes(cfg, varargin)
 
 % defaults
 if ~exist('cfg', 'var'); cfg = ArcadeConfig; end
