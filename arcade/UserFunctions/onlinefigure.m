@@ -78,23 +78,36 @@ classdef  onlinefigure < handle
       
     end
     
-    function  g = findgrp( f , id )
+    function  g = findgrp( f , id , type )
     % 
     % Return logical vector that locates the group with identifier id in
-    % the struct vector f.grp.
+    % the struct vector f.grp. Optional third arg says whether id is the
+    % 'group' identifer or the 'set' identifer.
     % 
       
+      % Check optional input arg
+      if  nargin < 3
+        type = 'group' ;
+      end
+      
+      % Fetch identifier from each group of appropriate type
+      switch  type
+        case  'group' , identifiers = { f.grp.id  } ;
+        case    'set' , identifiers = { f.grp.set } ;
+        otherwise , error( 'Programming error, blame Jackson.' )
+      end
+      
       % Generate logical index
-      g = strcmp( id , { f.grp.id } ) ;
+      g = strcmp( id , identifiers ) ;
       
       % Nothing found, id is somehow invalid
       if  ~ any( g )
         
         error( 'No group found with id %s.' )
         
-      % There should only be one group, otherwise there is a programming
-      % error
-      elseif  sum( g ) ~= 1
+      % There should only be one group if type is 'group', otherwise there
+      % is a programming error
+      elseif  strcmp( type , 'group' )  &&  sum( g ) ~= 1
         
         error( 'Found multiple groups with id %s' , id )
         
@@ -154,13 +167,30 @@ classdef  onlinefigure < handle
       end % Field names
     end
     
-    function  addgroup( f , id , set , data , hdata , fupdate )
+    function  buttondownfcn( f , d , group , set )
+    % 
+    % Generic ButtonDownFcn callback for grouped graphics objects. Allows
+    % user to select a set of objects (left-click) or a single group (right
+    % click). Passes in event data d as well as the group and set ID of the
+    % group that the clicked graphics object belongs to.
+    % 
+      
+      % Left-click, select set. Otherwise, select group.
+      if  d.Button == 1
+        f.select( 'set' , set ) ;
+      else
+        f.select( 'group' , group )
+      end
+      
+    end
+    
+    function  addgroup( f , grpid , setid , data , hdata , fupdate )
     % 
     % Add a new group. Must have a unique group id.
     % 
       
       % Basic error check of input
-      if  ~ iscellstr( { id , set } )
+      if  ~ iscellstr( { grpid , setid } )
         
         error( 'id and set must be strings.' )
         
@@ -184,9 +214,9 @@ classdef  onlinefigure < handle
         g = 1 ;
         
       % Has this group id been used already?
-      elseif  any( strcmp( id , { f.grp.id } ) )
+      elseif  any( strcmp( grpid , { f.grp.id } ) )
         
-        error( 'Group id %s already in use.' , id )
+        error( 'Group id %s already in use.' , grpid )
         
       % Everything is fine, get next position in group struct vector
       else , g = numel( f.grp ) + 1 ;
@@ -196,8 +226,8 @@ classdef  onlinefigure < handle
       % is created by default using this syntax. This is essential in the
       % selection function which must concatenate data across groups.
       % Initialise (un)selection parameter cell array.
-      f.grp( g ).id = id ;
-      f.grp( g ).set = set ;
+      f.grp( g ).id = grpid ;
+      f.grp( g ).set = setid ;
       f.grp( g ).data = data ;
       f.grp( g ).hdata = hdata ;
       f.grp( g ).fupdate = fupdate ;
@@ -206,6 +236,12 @@ classdef  onlinefigure < handle
       
       % Guarantee that new fields are row vectors
       f.chkrow( g )
+      
+      % Create ButtonDownFcn callback
+      cb = @( ~ , d ) f.buttondownfcn( d , grpid , setid ) ;
+      
+      % Assign this to all graphics objects
+      set( hdata , 'ButtonDownFcn' , cb )
       
     end
     
@@ -260,6 +296,9 @@ classdef  onlinefigure < handle
       
       % Check that new fields are row vectors
       f.chkrow( g )
+      
+      % Copy ButtonDownFcn from data graphics object(s)
+      set( hfit , 'ButtonDownFcn' , f.grp( g ).hdata( 1 ).ButtonDownFcn )
       
     end
     
@@ -334,24 +373,16 @@ classdef  onlinefigure < handle
         error( 'type and val must be strings.' )
       end
       
-      % Type of selection
-      switch  type
-        
-        % Select a specific group
-        case  'group' , selgrp = f.findgrp( val ) ;
-          
-        % Select a set of groups
-        case    'set' , selgrp = strcmp( val , { f.grp.set } ) ;
-          
-        % No valid type
-        otherwise , error( 'Unrecognised type %s.' , type )
-          
-      end % selection type
+      % Find groups with this identifier
+      selgrp = f.findgrp( val , type ) ;
       
       % Nothing selected
       if  ~ any( selgrp )
         error( 'There are no groups with %s id %s.' , type , val )
       end
+      
+      % Tell user which group is selected in window title bar
+      f.fig.Name = sprintf( '%s = %s' , type , val ) ;
       
       % Selected / un-selected groups
       for  G = { { selgrp , 'sel' } , { ~selgrp , 'unsel' } }

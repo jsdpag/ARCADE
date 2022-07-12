@@ -9,7 +9,7 @@
 
 %% Make GIF in present working directory?
 
-MAKE_GIF = true ;
+MAKE_GIF = false ;
 
 if  MAKE_GIF
   
@@ -193,16 +193,29 @@ for  PAR = { {  'performance' , 1 , @fupdate_perf , @ffit_perf } , ...
     % Define x-axis values for fitted curve
     xval = xval( 1 ) : diff( xval( [ 1 , end ] ) ) / 1e3 : xval( end ) ;
     xnan = nan( size( xval ) ) ;
-
+    
+    % Create threshold markers for x and y axis, and labels
+    H = [ plot( ax , nan( 2 , 2 ) , nan( 2 , 2 ) , 'k--' ) ; 
+          text( ax , nan( 1 , 2 ) , nan( 1 , 2 ) , { '' , '' } , ...
+            'FontName' , 'Arial' , 'VerticalAlignment' , 'bottom' ) ]' ;
+    
+      % Tag them
+      H( 1 ).Tag = 'xthreshold' ;  H( 3 ).Tag = 'xthlabel' ;
+      H( 2 ).Tag = 'ythreshold' ;  H( 4 ).Tag = 'ythlabel' ;
+      
+      % Selection/Unselection params
+      SEL = repmat( { { 'Visible' , 'on'  } } , size( H ) ) ;
+      UNS = repmat( { { 'Visible' , 'off' } } , size( H ) ) ;
+    
     % Create fitted function line
-    H = plot( ax , xval , xnan ) ;
-    SEL = { 'Color' , ax.ColorOrder( 1 , : ) , 'LineWidth' , 1 } ;
-    UNS = { 'Color' , [ 0.6 , 0.6 , 0.6 ] , 'LineWidth' , 0.5 } ;
+    H = [ H , plot( ax , xval , xnan , 'Tag' , 'curve' ) ] ;
+    SEL = [ SEL , {{ 'Color', ax.ColorOrder( 1 , : ), 'LineWidth' , 1 }} ];
+    UNS = [ UNS , {{ 'Color', [ 0.6 , 0.6 , 0.6 ], 'LineWidth', 0.5 }} ];
 
     % Bind fitted function to data, and selection params to fit objects
     ofig.bindfit( id , H , ffit )
-    ofig.bindparam( id ,   'selfit' , SEL )
-    ofig.bindparam( id , 'unselfit' , UNS )
+    ofig.bindparam( id ,   'selfit' , SEL{ : } )
+    ofig.bindparam( id , 'unselfit' , UNS{ : } )
 
   end % cond
 end % performance / RT plots
@@ -606,8 +619,31 @@ function  ffit_generic( hfit , hdata , data , type , n , fun , bounds )
   % Best fit
   c = lsqcurvefit( fun , c0 , x , y , bounds{ : } , opt ) ; 
   
+  % Locate different elements
+  hcurve = findobj( hfit , 'Tag' , 'curve'      ) ;
+  hxthr  = findobj( hfit , 'Tag' , 'xthreshold' ) ;
+  hxlab  = findobj( hfit , 'Tag' , 'xthlabel'   ) ;
+  hythr  = findobj( hfit , 'Tag' , 'ythreshold' ) ;
+  hylab  = findobj( hfit , 'Tag' , 'ythlabel'   ) ;
+  
   % Draw best fit line
-  hfit.YData( : ) = fun( c , hfit.XData ) ;
+  hcurve.YData( : ) = fun( c , hcurve.XData ) ;
+  
+  % Locate the threshold value i.e. x-axis position
+  hxthr.XData( : ) = c( 4 ) ;
+  hythr.XData( : ) = [ hcurve.XData( 1 ) , c( 4 ) ] ;
+  
+  % Locate the performance at threshold
+  hxthr.YData( : ) = [ 0 , fun( c , c( 4 ) ) ] ;
+  hythr.YData( : ) = hxthr.YData( 2 ) ;
+  
+  % Make threshold labels
+  hxlab.String = sprintf( '%.2f' , c( 4 ) ) ;
+  hylab.String = sprintf( '%.2f' , hxthr.YData( 2 ) ) ;
+  
+  % Position labels
+  hxlab.Position( 1 : 2 ) = [ c( 4 ) , 0 ] ;
+  hylab.Position( 1 : 2 ) = [ hcurve.XData( 1 ) , hxthr.YData( 2 ) ] ;
   
 end % ffit_perf
 
