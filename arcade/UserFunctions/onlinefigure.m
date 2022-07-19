@@ -401,7 +401,12 @@ classdef  onlinefigure < handle
           p = [ f.grp( g ).( p ) ] ;
           
           % Graphics objects, apply new parameters
-          for  i = 1 : numel( h ) , set( h( i ) , p{ i }{ : } ) ; end
+          for  i = 1 : numel( h )
+            
+            % Only do it if parameter set is not empty
+            if  ~ isempty( p{ i } ) , set( h( i ) , p{ i }{ : } ) ; end
+          
+          end % apply new parameters
           
           % Continue to next data type if these are un-selected groups.
           % Because the next step is to bring selected objects to the
