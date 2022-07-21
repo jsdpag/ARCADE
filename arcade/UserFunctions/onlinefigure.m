@@ -103,7 +103,7 @@ classdef  onlinefigure < handle
       % Nothing found, id is somehow invalid
       if  ~ any( g )
         
-        error( 'No group found with id %s.' )
+        error( 'No group found with id %s.' , id )
         
       % There should only be one group if type is 'group', otherwise there
       % is a programming error
