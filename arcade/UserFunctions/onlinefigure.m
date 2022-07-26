@@ -194,7 +194,7 @@ classdef  onlinefigure < handle
         
         error( 'id and set must be strings.' )
         
-      elseif  ~ isgraphics( hdata )
+      elseif  isempty( hdata ) || ~all( isgraphics( hdata ) )
         
         error( 'hdata must be an array of graphics objects.' )
         
@@ -274,7 +274,7 @@ classdef  onlinefigure < handle
         
         error( 'id must be a string.' )
         
-      elseif  ~ isgraphics( hfit )
+      elseif  isempty( hfit ) || ~all( isgraphics( hfit ) )
         
         error( 'hfit must be an array of graphics objects' )
         
@@ -399,6 +399,9 @@ classdef  onlinefigure < handle
           % Now retrieve these things, across groups
           h = [ f.grp( g ).( h ) ] ;
           p = [ f.grp( g ).( p ) ] ;
+          
+          % It may be that no curve-fitting objects were bound, skip
+          if  strcmp( dattyp , 'fit' ) && isempty( h ) , continue , end
           
           % Graphics objects, apply new parameters
           for  i = 1 : numel( h )
