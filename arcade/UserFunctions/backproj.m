@@ -95,13 +95,19 @@ function  P = backproj( x , deg , orientation )
   % Convert from degrees to radians
   rad = deg * pi / 180 ;
   
-  % Create coordinate vectors centred on the middle of the input image, the
-  % one that will be rotated
+  % Create coordinate vectors centred on the middle of the output image,
+  % the one that has been rotated.
   X = ( 1 : N )' - hN ;
   Y = ( 1 : N )  - hN ;
   
   % Compute the mapping from input image pixels (in linear indices of x) to
-  % each pixel of the output image. I is an N by N matrix, and each element
+  % each pixel of the output image. This is done by taking the coordinate
+  % of each pixel in the output image, then applying the inverse (reverse)
+  % rotation to re-create the input image. The transformation below returns
+  % the x-axis coordinate of the original pixel in the input image, which
+  % of course is the index of x. Rounding to the nearest index value incurs
+  % some blurring; but this will not matter in practice if the sampling
+  % rate is high enough. I is an N by N matrix, and each element
   % corresponds to one pixel of the output image. It's value is the index
   % of the mapped value from x.
   I = round( cos( rad ) * X  +  sin( rad ) * Y  +  hN ) ;
