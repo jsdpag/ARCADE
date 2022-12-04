@@ -142,10 +142,11 @@ classdef (Sealed) SGLSessionArc
                 timeBEPeriod( 'e' , 1 ) ;
                 
                 % Error log end of trial
-                logmessage( sprintf( 'End of trial %d' , ...
-                  TrialData.currentTrial ) )
+                logmessage( 'Writing events' )
 
                 EventServer.writeEvents();
+                
+                logmessage( 'Accumulate reward time' )
 
                 if DaqServer.GetConnectionStatus()
                     totalRewardTime(DaqServer.GetTotalRewardTime());
@@ -158,6 +159,8 @@ classdef (Sealed) SGLSessionArc
                 
                 % -- Pause Requested? --
                 % also allows the user to quit the current session
+                logmessage( 'Check PauseEvent' )
+                
                 if PauseEvent.wasTriggered
                   
                     % Error log entering pause block
@@ -177,18 +180,26 @@ classdef (Sealed) SGLSessionArc
                     logmessage( 'Exit pause state' )
                 end
                 
+                logmessage( 'Check session quit request' )
+                
                 % check if the user has requested to quit the session 
                 userQuitSession = requestQuitSession('read');
                 if userQuitSession
                     disp('User requested quit session.');
                 end
                 
+                logmessage( 'Write behav store' )
+                
                 % before processing a possible quit request ...
                 %   write the BHV contents
                 BHVstore.tmpWriteBinaryBHV(BHVstore.currentTrial);
 
+                logmessage( sprintf( 'End of trial %d' , ...
+                  TrialData.currentTrial ) )
+                
                 % -- Quit Requested or Max Trials Reached? --
-                if BHVstore.currentTrial >= maxTrials || quitSession || userQuitSession                    
+                if BHVstore.currentTrial >= maxTrials || quitSession || userQuitSession
+                    logmessage( 'Breaking session loop' )
                     break;
                 end
             end
