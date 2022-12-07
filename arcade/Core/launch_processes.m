@@ -178,7 +178,22 @@ if ~isempty(cfg.EyeServer)
       
     end % EyeServer sample mode
     
-    EyeServer.Start('tmp.edf')
+    % Session launch script was executed, and it defined the struct
+    % sesslaunchparams with field .EyeServer_UniqueTmp
+    if  exist( 'sesslaunchparams' , 'var' )  &&  ...
+        isfield( sesslaunchparams , 'EyeServer_UniqueTmp' )  &&  ...
+        sesslaunchparams.EyeServer_UniqueTmp
+      
+      edfnam = [ 'tmp' , cfg.Session , '.edf' ] ;
+      
+    % Default
+    else , edfnam = 'tmp.edf' ;
+      
+    end % EyeLink file name
+    
+    logmessage( sprintf( 'EyeLink HostPC saving to %s' , edfnam ) )
+    EyeServer.Start( edfnam )
+    
 end
 
 % connect to ControlScreen
