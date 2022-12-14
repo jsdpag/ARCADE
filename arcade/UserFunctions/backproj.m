@@ -9,7 +9,10 @@ function  P = backproj( x , deg , orientation )
 % onto N x N plane P. The output can be combined with data at other
 % rotations to map the position of a visual receptive field. Both x and deg
 % must be real-valued, finite, numerical types; they will be cast to double
-% if they are not already.
+% if they are not already. x may be a matrix, in which each column contains
+% a vector that will be separately back-projected. For an N by M matrix x,
+% P becomes N x N x M such that dim 3 of P is in register with column i of
+% x; P( : , : , i ) is then the back-projection of x( : , i ).
 % 
 % Conceptually, backproj does the following. Let f( i , j ) = x( i ) for
 % all i and j in 1 : N. In other words, let f( i , j ) be an image drawn in
@@ -50,9 +53,12 @@ function  P = backproj( x , deg , orientation )
    narginchk( 2 , 3 )
   nargoutchk( 0 , 1 )
   
+  % Empty input produces empty output
+  if  isempty( x )  ||  isempty( deg ) , P = [ ] ; return , end
+  
   % Numeric validity testing
-    x = checknum(   'x' , x   ) ;
-  deg = checknum( 'deg' , deg ) ;
+    x = checknum(   'x' ,  x  , 'matrix' ) ;
+  deg = checknum( 'deg' , deg , 'scalar' ) ;
   
   % Default value of arg 'orientation'
   if  nargin < 3 , orientation = 'xy' ; end
@@ -72,8 +78,18 @@ function  P = backproj( x , deg , orientation )
   
   %%% Back-projection %%%
   
-  % Number of elements in x
-  N = numel( x ) ;
+  % Number of elements in x if it is a vector
+  if  isvector( x )
+    
+    N = numel( x ) ;
+    M = 1 ;
+    
+  % x is a matrix, a set of column vectors
+  else
+    
+    [ N , M ] = size( x ) ;
+    
+  end % size of x
   
   % Half number of elements
   hN = N / 2 ;
@@ -115,12 +131,31 @@ function  P = backproj( x , deg , orientation )
   % Find all valid indices
   V = I >= 1 & I <= N ;
   
+  % Keep only valid indices
+  I = I( V ) ;
+  
   % Initialise projected image
   P = zeros( N ) ;
   
   % Map values from x to create the back-projection. Leave zeros where
-  % indices are not valid.
-  P( V ) = x( I( V ) ) ;
+  % indices are not valid. First case, x is a vector.
+  if  M == 1
+    
+    P( V ) = x( I ) ;
+    
+  % x is a matrix
+  else
+    
+    % Cell array of maps
+    C = repmat( { P } , 1 , M ) ;
+    
+    % Columns of x
+    for  m = 1 : M , C{ m }( V ) = x( I , m ) ; end
+    
+    % Stick together into one array
+    P = cat( 3 , C{ : } ) ;
+    
+  end % map values
   
   % Apply desired orientation of the back projection data in matrix P
   switch  orientation
@@ -131,10 +166,10 @@ function  P = backproj( x , deg , orientation )
       % No action required
       
     % Y-axis increases across rows, x-axis across columns. Transpose.
-    case   'yx' , P = P' ;
+    case   'yx' , P = permute( P , [ 2 , 1 , 3 ] ) ;
       
     % Y-axis decreases across rows. Transpose and flip along 1st dimension.
-    case  '-yx' , P = flipud( P' ) ;
+    case  '-yx' , P = flipud( permute( P , [ 2 , 1 , 3 ] ) ) ;
       
     % Programming error
     otherwise , error( 'Programming error detected. Blame Jackson.' )
@@ -148,11 +183,11 @@ end % backproj
 %%% Sub-function %%%
 
 % Checks the validity of numeric input argument
-function  value = checknum( name , value )
+function  value = checknum( name , value , type )
   
   % Valid value
-  if isnumeric( value ) && all( isfinite( value ) ) && isreal( value ) ...
-      && isvector( value )
+  if  isnumeric( value ) && all( isfinite( value ) , 'all' ) && ...
+        isreal( value )
     
     % Cast value to double if it is not already
     if  ~ isa( value , 'double' ) , value = double( value ) ; end
@@ -160,9 +195,19 @@ function  value = checknum( name , value )
   % Illegal value
   else
     
-    error( '%s must be finite, real, and numeric vector.' , name )
+    error( '%s must be finite, real, and numeric.' , name )
     
   end % validity
+  
+  % Check configuration of input
+  switch  type
+    case  'scalar' , tflg = isscalar( value ) ;
+    case  'matrix' , tflg = ismatrix( value ) ;
+    otherwise , error( 'Programming error, incorrect type argument' )
+  end
+  
+  % Bad configuration
+  if  ~ tflg , error( '%s must be a %s' , name , type ) , end
   
 end % checknum
 
