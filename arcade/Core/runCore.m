@@ -97,10 +97,10 @@ evtFile = fullfile(cfg.filepaths.Behaviour, [cfg.sessionName '.evt']);
 eventServer = SGLEventMarkerServer.launch(evtFile);
 
 % asynchronously launch subprocesses
-[ processes , cfg ] = launch_processes(cfg, ...
+[ processes , cfg , sesslaunchparams ] = launch_processes(cfg, ...
     fullfile(cfg.filepaths.Backup, [cfg.sessionName '_cfg.mat']));
 
-cleanup = onCleanup(@() cleanup_function(cfg, processes));
+cleanup = onCleanup(@() cleanup_function(cfg, processes,sesslaunchparams));
 
 %% Run session
 cd(fileparts(cfg.taskFile));
@@ -120,18 +120,22 @@ logmessage('Closing ARCADE');
 end
 
 
-function cleanup_function(cfg, procs)
+function cleanup_function(cfg, procs, sesslaunchparams)
 
 % quit eye server
 if ~isempty(cfg.EyeServer)
     trackeye('reset')
-    eyeFile =  fullfile(cfg.filepaths.Behaviour, [cfg.sessionName '.edf']);
-    EyeServer.Stop(eyeFile)
-    waitForFileEvt = IPCEvent('EyeServerDone');
-    logmessage('Waiting for eye data transfer')
-    result = waitForFileEvt.waitForTrigger(43200000);
-    if ~result
-        warning('Could not transfer eye data')
+    if  sesslaunchparams.EyeServer_TransferData
+      eyeFile = fullfile(cfg.filepaths.Behaviour,[cfg.sessionName '.edf']);
+      EyeServer.Stop(eyeFile)
+      waitForFileEvt = IPCEvent('EyeServerDone');
+      logmessage('Waiting for eye data transfer')
+      result = waitForFileEvt.waitForTrigger(43200000);
+      if ~result
+          warning('Could not transfer eye data')
+      end
+    else
+      EyeServer.Stop( )
     end
 end
 

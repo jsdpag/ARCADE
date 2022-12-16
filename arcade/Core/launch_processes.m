@@ -1,4 +1,4 @@
-function [ procs , cfg ] = launch_processes(cfg, varargin)
+function [ procs, cfg, sesslaunchparams ] = launch_processes(cfg, varargin)
 
 % defaults
 if ~exist('cfg', 'var'); cfg = ArcadeConfig; end
@@ -7,6 +7,10 @@ if nargin == 1
 elseif nargin == 2
     cfgPath = varargin{1};
 end
+
+sesslaunchparams.EyeServer_SampleMode   = false ;
+sesslaunchparams.EyeServer_UniqueTmp    = false ;
+sesslaunchparams.EyeServer_TransferData = true  ;
 
 % Task file name provided
 if  ~ isempty( cfg.taskFile )
@@ -169,9 +173,7 @@ if ~isempty(cfg.EyeServer)
     
     % Session launch script was executed, and it defined the struct
     % sesslaunchparams with field .EyeServer_SampleMode
-    if  exist( 'sesslaunchparams' , 'var' )  &&  ...
-        isfield( sesslaunchparams , 'EyeServer_SampleMode' )  &&  ...
-        sesslaunchparams.EyeServer_SampleMode
+    if  sesslaunchparams.EyeServer_SampleMode
       
       logmessage( 'Enabling EyeServer Sample Mode' )
       EyeServer.SetSampleMode( ) ;
@@ -180,9 +182,7 @@ if ~isempty(cfg.EyeServer)
     
     % Session launch script was executed, and it defined the struct
     % sesslaunchparams with field .EyeServer_UniqueTmp
-    if  exist( 'sesslaunchparams' , 'var' )  &&  ...
-        isfield( sesslaunchparams , 'EyeServer_UniqueTmp' )  &&  ...
-        sesslaunchparams.EyeServer_UniqueTmp
+    if  sesslaunchparams.EyeServer_UniqueTmp
       
       edfnam = [ 'tmp' , cfg.Session , '.edf' ] ;
       
