@@ -20,6 +20,8 @@ function  syn = initsynapse( cfg , tab , evm , err , TdtHostPC , ...
 % run-time mode. Generates ARCADE session header and sends to Synapse as
 % run-time note; these include information about the setup, the event
 % markers, and error codes. tab can be empty [ ] if it is not available.
+% Fetches TDT Tank and Block names, and saves this to the session directory
+% in TDTinfo.mat and .txt.
 % 
 % Returns empty [ ] if TdtHostPC is 'none'.
 % 
@@ -125,6 +127,26 @@ function  syn = initsynapse( cfg , tab , evm , err , TdtHostPC , ...
       'Please put Synapse into a run-time mode.' )
     
   end % run-time mode
+  
+  
+  %-- TDT storage info saved with ARCADE session files --%
+
+  % Get the TDT Tank and Block names. This is where ephys and behav data is
+  % being stored.
+  TDT_tank  = iget( syn , 'getCurrentTank'  ) ;
+  TDT_block = iget( syn , 'getCurrentBlock' ) ;
+  
+  % Base file name without file type extension
+  fnam = fullfile( cfg.filepaths.Session , 'TDTinfo' ) ;
+  
+  % Store .mat copy of this info
+  save( fnam , 'TDT_tank' , 'TDT_block' )
+  
+  % Format output string
+  str = sprintf( 'TDT_tank %s\nTDT_block %s\n' , TDT_tank , TDT_block ) ;
+
+  % And write to text file
+  writetxt( fnam , str )
   
   
   %-- ARCADE session header --%
