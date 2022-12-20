@@ -1,8 +1,9 @@
 
-function  err = gettrialerrors( retmap )
+function  err = gettrialerrors( retmap , cfg )
 % 
 % err = gettrialerrors
 % map = gettrialerrors( retmap )
+% map = gettrialerrors( retmap , cfg )
 % 
 % Returns 2 x 9 cell array of trial error labels (top row) and integer
 % codes (bottom row). Each column encodes a separate trial error. Strings
@@ -12,12 +13,16 @@ function  err = gettrialerrors( retmap )
 % If all trial error legend strings are valid MATLAB field names, then a
 % name to value mapping can be returned in map if scalar logical retmap is
 % true. map is a struct. Each field is a trial error label containing a
-% scalar, numeric error code between 1 and 9. retmap is optional (default
-% false).
+% scalar, numeric error code between 1 and 9. retmap is optional and
+% defaults to false if it is missing or empty [ ].
+% 
+% Also optional is ArcadeConfig object cfg. If omitted or empty then this
+% is obtained from the ARCADE session's SGLBehaviouralStore using
+% retrieveConfig. Give cfg as an input argument for offline testing.
 % 
   
   % Check input
-  if  nargin < 1
+  if  nargin < 1  ||  isempty( retmap )
     
     retmap = false ;
     
@@ -28,7 +33,17 @@ function  err = gettrialerrors( retmap )
   end % check input
   
   % Get session ArcadeConfig object
-  cfg = retrieveConfig ;
+  if  nargin < 2  ||  isempty( cfg )
+    
+    % Not an input argument, look for this in the SGLBehaviouralStore
+    cfg = retrieveConfig ;
+    
+  % cfg is an input argument, is it the right type?
+  elseif  ~ isa( cfg , 'ArcadeConfig' )
+    
+    error( 'cfg must be from ArcadeConfig class' )
+    
+  end % get cfg
   
   % Point to trial error legend
   leg = cfg.TrialErrorLegend ;
