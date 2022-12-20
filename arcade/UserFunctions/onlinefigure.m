@@ -36,7 +36,7 @@ classdef  onlinefigure < handle
     % 
         
       % fnam is not a string
-      if  ~( isrow( fnam ) && ischar( fnam ) )
+      if  ~( ( isrow( fnam ) || isempty( fnam ) ) && ischar( fnam ) )
         error( 'fnam must be a char row vector i.e. a string' )  
       end
       
