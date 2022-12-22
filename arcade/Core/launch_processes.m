@@ -281,7 +281,7 @@ POS = { sesslaunchparams.Position_EyeServer  ;
 i = cellfun( @isempty , POS ) ;  WIN( i ) = [ ] ;  POS( i ) = [ ] ;
 
 % Move windows to new positions
-i = cellfun( @( w , p ) winpos( w , p ) , WIN , POS ) ;
+i = ~ cellfun( @( w , p ) winpos( w , p ) , WIN , POS ) ;
 
   % Report any failures
   cellfun( @( w ) fprintf( 'Failed to move window %s\n' , w ) , WIN( i ) );
