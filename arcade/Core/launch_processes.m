@@ -8,9 +8,15 @@ elseif nargin == 2
     cfgPath = varargin{1};
 end
 
+% This struct can be altered by task-specific session_launch_script.m
 sesslaunchparams.EyeServer_SampleMode   = false ;
 sesslaunchparams.EyeServer_UniqueTmp    = false ;
 sesslaunchparams.EyeServer_TransferData = true  ;
+sesslaunchparams.Window_EyeServer  = 'EyeLinkServer - Untitled' ;
+sesslaunchparams.Window_EchoServer = fullfile( arcaderoot , 'arcade' , ...
+                                       'EchoServer' , 'EchoServer.exe' ) ;
+sesslaunchparams.Position_EyeServer  = [ ] ;
+sesslaunchparams.Position_EchoServer = [ ] ;
 
 % Task file name provided
 if  ~ isempty( cfg.taskFile )
@@ -235,3 +241,18 @@ end
 
 % Find process identifiers of critical ARCADE processes
 apriority ( 'initialisation' , critical )
+
+% Build cell arrays of window titles and new window positions
+WIN = { sesslaunchparams.Window_EyeServer  ;
+        sesslaunchparams.Window_EchoServer } ;
+POS = { sesslaunchparams.Position_EyeServer  ;
+        sesslaunchparams.Position_EchoServer } ;
+      
+% Get rid of empty cells
+i = cellfun( @isempty , POS ) ;  WIN( i ) = [ ] ;  POS( i ) = [ ] ;
+
+% Move windows to new positions
+i = cellfun( @( w , p ) winpos( w , p ) , WIN , POS ) ;
+
+  % Report any failures
+  cellfun( @( w ) fprintf( 'Failed to move window %s\n' , w ) , WIN( i ) );
