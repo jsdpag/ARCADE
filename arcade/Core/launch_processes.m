@@ -17,6 +17,7 @@ sesslaunchparams.Window_EchoServer = fullfile( arcaderoot , 'arcade' , ...
                                        'EchoServer' , 'EchoServer.exe' ) ;
 sesslaunchparams.Position_EyeServer  = [ ] ;
 sesslaunchparams.Position_EchoServer = [ ] ;
+sesslaunchparams.Location_ArcadeRemote = [ ] ;
 
 % Task file name provided
 if  ~ isempty( cfg.taskFile )
@@ -242,7 +243,35 @@ end
 % Find process identifiers of critical ARCADE processes
 apriority ( 'initialisation' , critical )
 
-% Build cell arrays of window titles and new window positions
+% Starting ARCADE remote location is requested
+f = findobj( 'Type' , 'figure' , 'Tag' , 'remote' ) ;
+
+if  ~ isempty( sesslaunchparams.Location_ArcadeRemote )  &&  ...
+    ~ isempty( f )
+  
+  % Root graphics object
+  g = groot ;
+  
+  % Handle horizontal position for different locations
+  switch  sesslaunchparams.Location_ArcadeRemote
+    case  { 'east' , 'northeast' , 'southeast' }
+      f.OuterPosition( 1 ) = g.ScreenSize( 3 ) - f.OuterPosition( 3 ) ;
+    case  { 'west' , 'northwest' , 'southwest' }
+      f.OuterPosition( 1 ) = 1 ;
+  end
+  
+  % Handle vertical position for different locations
+  switch  sesslaunchparams.Location_ArcadeRemote
+    case  { 'north' , 'northeast' , 'northwest' }
+      f.OuterPosition( 2 ) = g.ScreenSize( 4 ) - f.OuterPosition( 4 ) ;
+    case  { 'south' , 'southeast' , 'southwest' }
+      f.OuterPosition( 2 ) = 1 ;
+  end
+
+end % ARCADE remote starting location
+
+% Build cell arrays of window titles and starting window positions. But
+% only for windows that must be moved using Win32.
 WIN = { sesslaunchparams.Window_EyeServer  ;
         sesslaunchparams.Window_EchoServer } ;
 POS = { sesslaunchparams.Position_EyeServer  ;
