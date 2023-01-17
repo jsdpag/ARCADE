@@ -104,7 +104,7 @@ classdef CalibrateEyelink < handle
             cfg.StimServer = 'StimServer.exe';
             obj.procs = launch_processes(cfg);
             
-            if  exist( 'screenGamma' , 'var' ) || ~isempty( screenGamma )
+            if  exist( 'screenGamma' , 'var' ) && ~isempty( screenGamma )
               StimServer.InvertGammaCorrection( screenGamma ) ;
             end
             
