@@ -253,19 +253,25 @@ if  ~ isempty( sesslaunchparams.Location_ArcadeRemote )  &&  ...
   g = groot ;
   
   % Handle horizontal position for different locations
-  switch  sesslaunchparams.Location_ArcadeRemote
+  switch  lower( sesslaunchparams.Location_ArcadeRemote )
     case  { 'east' , 'northeast' , 'southeast' }
       f.OuterPosition( 1 ) = g.ScreenSize( 3 ) - f.OuterPosition( 3 ) ;
     case  { 'west' , 'northwest' , 'southwest' }
       f.OuterPosition( 1 ) = 1 ;
+    case  { 'north' , 'south' }
+      f.OuterPosition( 1 ) = ...
+        g.ScreenSize( 3 ) / 2  -  f.OuterPosition( 3 ) / 2 ;
   end
   
   % Handle vertical position for different locations
-  switch  sesslaunchparams.Location_ArcadeRemote
+  switch  lower( sesslaunchparams.Location_ArcadeRemote )
     case  { 'north' , 'northeast' , 'northwest' }
       f.OuterPosition( 2 ) = g.ScreenSize( 4 ) - f.OuterPosition( 4 ) ;
     case  { 'south' , 'southeast' , 'southwest' }
       f.OuterPosition( 2 ) = 1 ;
+    case  { 'west' , 'east' }
+      f.OuterPosition( 2 ) = ...
+        g.ScreenSize( 4 ) / 2  -  f.OuterPosition( 4 ) / 2 ;
   end
 
 end % ARCADE remote starting location
