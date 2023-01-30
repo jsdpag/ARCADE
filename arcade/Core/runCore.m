@@ -122,6 +122,24 @@ end
 
 function cleanup_function(cfg, procs, sesslaunchparams)
 
+% Request task script shutdown tasks?
+if  sesslaunchparams.TaskScript_Shutdown
+  
+  % Try to find global variable containing shutdown tasks
+  global  ARCADE_TASK_SCRIPT_SHUTDOWN
+  
+  % Not empty, is cell array, contains function handles
+  if  ~ isempty( ARCADE_TASK_SCRIPT_SHUTDOWN )  &&  ...
+         iscell( ARCADE_TASK_SCRIPT_SHUTDOWN )  &&  ...
+      all( cellfun( @( f ) isa( f , 'function_handle' ) , ...
+                 ARCADE_TASK_SCRIPT_SHUTDOWN ) )
+    
+    % Shutdown tasks
+    for f = ARCADE_TASK_SCRIPT_SHUTDOWN( : )' , try f() ; catch , end , end
+    
+  end
+end % task script shutdown
+
 % quit eye server
 if ~isempty(cfg.EyeServer)
     trackeye('reset')

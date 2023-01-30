@@ -18,6 +18,7 @@ sesslaunchparams.Window_EchoServer = fullfile( arcaderoot , 'arcade' , ...
 sesslaunchparams.Position_EyeServer  = [ ] ;
 sesslaunchparams.Position_EchoServer = [ ] ;
 sesslaunchparams.Location_ArcadeRemote = [ ] ;
+sesslaunchparams.TaskScript_Shutdown = false ;
 
 % Task file name provided
 if  ~ isempty( cfg.taskFile )
