@@ -134,8 +134,10 @@ if  sesslaunchparams.TaskScript_Shutdown
       all( cellfun( @( f ) isa( f , 'function_handle' ) , ...
                  ARCADE_TASK_SCRIPT_SHUTDOWN ) )
     
-    % Shutdown tasks
-    for f = ARCADE_TASK_SCRIPT_SHUTDOWN( : )' , try f() ; catch , end , end
+    % Shutdown tasks without crashing
+    for f = ARCADE_TASK_SCRIPT_SHUTDOWN( : )'
+      try  f{ 1 }( ) ; catch , end
+    end
     
   end
 end % task script shutdown
