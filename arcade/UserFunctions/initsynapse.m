@@ -212,7 +212,7 @@ function  syn = initsynapse( cfg , tab , evm , err , TdtHostPC , ...
           { 'ARCADE session header end'   } ] ;
 
 	% Combine into one string
-  hdr = strjoin( hdr , '\n' ) ;
+  hdr = strjoin( hdr , ';' ) ;
   
   % Send synapse api runtime note
   if  ~ syn.setParameterValue( 'RecordingNotes' , 'Note' , hdr )
