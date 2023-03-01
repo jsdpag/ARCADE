@@ -117,11 +117,21 @@ classdef (Sealed) SGLSessionArc
                 % 1ms
                 timeBEPeriod( 'b' , 1 ) ;
                 
+                  % Log progress
+                  logmessage( sprintf( 'Multi-media timers enabled.\n' ) )
+                
                 % We are now entering a critical period. Flip essential
                 % ARCADE processes into a high-priority state.
                 apriority ( 'change' , 'high' )
 
+                  % Log progress
+                  logmessage( sprintf( 'High-priority enabled.\n' ) )
+                
                 trialerror_tic('start'); % Start trial
+                  
+                  % Log progress
+                  logmessage( sprintf( 'Start of trial timestamped.\n' ) )
+                  
                 try
                     % try to run states
                     stateArc.mRunTrial; % user vars are destroyed
